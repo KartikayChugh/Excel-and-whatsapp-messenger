@@ -3,6 +3,8 @@ const bodyParser = require('body-parser');
 const XLSX = require('xlsx');
 const fs = require('fs');
 const path = require('path');
+const { Client, LocalAuth } = require('whatsapp-web.js');
+const qrcode = require('qrcode-terminal');
 
 const app = express();
 const port = 3000;
@@ -10,6 +12,26 @@ const port = 3000;
 // Middleware to parse form data
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
+// Initialize WhatsApp client with custom session path
+const client = new Client({
+    authStrategy: new LocalAuth({ clientId: "client-unique-id", sessionPath: './custom_session' }), // Specify a new session folder
+    puppeteer: { headless: true }
+  });
+
+// Event when the QR code is received for authentication
+client.on('qr', (qr) => {
+  // Generate the QR code in the terminal for scanning
+  qrcode.generate(qr, { small: true });
+});
+
+// Event when the client is successfully logged in and ready
+client.on('ready', () => {
+  console.log('Client is ready!');
+});
+
+// Initialize the WhatsApp client
+client.initialize();
 
 // Serve the HTML form
 app.get('/', (req, res) => {
@@ -36,7 +58,7 @@ app.post('/submit', (req, res) => {
     const sheet = XLSX.utils.aoa_to_sheet(headers); // Create a sheet with headers
     workbook.Sheets['Contacts'] = sheet; // Assign the sheet to the workbook
     XLSX.utils.book_append_sheet(workbook, sheet, 'Contacts');
-  } 
+  }
 
   // Get the existing sheet or initialize if it doesn't exist
   const sheet = workbook.Sheets['Contacts'];
@@ -56,9 +78,35 @@ app.post('/submit', (req, res) => {
   // Save the updated workbook back to the file
   XLSX.writeFile(workbook, filePath);
 
-  res.send('Data saved successfully! <a href="/">Go back to the form</a>');
+  // Generate WhatsApp number by prepending country code to the phone number
+  const whatsappNumber = `91${phone_number}`;  // Prepend '91' to the phone number
+
+  // Create the message
+  const message = `New Contact Form Submission:
+  Name: ${name}
+  Company: ${company}
+  Email: ${email}
+  Phone Number: ${phone_number}`;
+
+  // Send the message to the specified WhatsApp number
+  client.sendMessage(`${whatsappNumber}@c.us`, message)
+    .then(response => {
+      console.log('Message sent:', response);
+    })
+    .catch(err => {
+      console.error('Error sending message:', err);
+    });
+
+  // Respond to the user
+  res.send('Data saved successfully and WhatsApp message sent! <a href="/">Go back to the form</a>');
 });
 
+// Start the server
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
+
+
+
+
+/// USE TERMINAL COMMAND TO RUN : node --no-deprecation main.js 

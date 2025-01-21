@@ -1,21 +1,37 @@
-# Ignore node_modules directory
+# Node.js dependencies
 node_modules/
 
-# Optional: Ignore logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+# npm log files
+npm-debug.log
+yarn-debug.log
+yarn-error.log
 
-# Optional: Ignore environment files
+# Environment variables
 .env
 
-# Optional: Ignore OS and editor files
+# Operating System files
 .DS_Store
-Thumbs.db
-.idea/
-.vscode/
 
-# Ignore contacts.xlsx file
+# Logs
+logs/
+*.log
+
+# IDE/Editor files
+.vscode/
+.idea/
+
+# npm package lock
+package-lock.json
+
+# Build output
+dist/
+build/
+
+# Optional: Ignore test coverage reports
+coverage/
+
 contacts.xlsx
+
+# Ignore WhatsApp web.js specific folders
+.wwebjs_cache/
+.wwebjs_auth/

@@ -1,0 +1,6 @@
+This project has a form that the user fills based on which an excel sheet gets made and a whatsapp message gets generated and sent to the end users
+
+How to use the program :
+1. 'npm i' all the dependencies.
+2. use terminal command to run the project : node --no-deprecation main.js 
+3. scan the qr code from whatsapp and link the device, this whatsapp account is the one from which the messages are sent.
