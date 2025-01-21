@@ -36,7 +36,7 @@ app.post('/submit', (req, res) => {
     const sheet = XLSX.utils.aoa_to_sheet(headers); // Create a sheet with headers
     workbook.Sheets['Contacts'] = sheet; // Assign the sheet to the workbook
     XLSX.utils.book_append_sheet(workbook, sheet, 'Contacts');
-  }
+  } 
 
   // Get the existing sheet or initialize if it doesn't exist
   const sheet = workbook.Sheets['Contacts'];
